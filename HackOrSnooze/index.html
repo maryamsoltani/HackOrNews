@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 
 <!-- Hack or Snooze
-
      This is the only HTML page; the applications manipulates this DOM
      during use.
-
      Primary authors:
      - Michael Hueter: initial creation, 2018
      - Elie Schoppik: refactoring using OO, 2019
@@ -37,10 +35,13 @@
   <div class="navbar-brand">
     <a class="nav-link" href="#" id="nav-all">Hack or Snooze</a>
   </div>
-  <div class="nav-left">
-    <a class="nav-link" href="#" id="storyPost">Post Story</a>
-    <a class="nav-link" href="#" id="favoriteStories">My Favorites</a>
-    <a class="nav-link" href="#" id="myStories">My Stories</a>
+  <div class="main-nav-links hidden">
+     |
+    <a class="nav-link" href="#" id="nav-submit-story">submit</a>
+     |
+     <a class="nav-link" href="#" id="nav-favorites">favorites</a>
+     |
+     <a class="nav-link" href="#" id="nav-my-stories">my&nbsp;stories</a>
   </div>
   <div class="nav-right">
     <a class="nav-link" href="#" id="nav-login">login/signup</a>
@@ -49,38 +50,28 @@
   </div>
 </nav>
 
-<!-- new story post form -->
-<form class="hidden" id="storyForm">
-  <div id="titleContainer">
-  <h3>Post a Story</h3>
-  </div>
-  <div class="containerStory">
-    <div class="input-story storyVal">
-      <label for="story-title">Title</label>
-      <input type="text" placeholder="Title" id="story-title">
-    </div>
-    <div class="input-story storyVal">
-      <label for="story-author">Author</label>
-      <input type="text" placeholder="Author" id="story-author">
-    </div>
-    <div class="input-story storyVal">
-      <label for="story-url">Link</label>
-      <input type="text" placeholder="URL" id="story-url">
-    </div>
-    <div class="input-story btn-submit">
-      <label for="submit-btn"></label>
-      <input type="submit" id="submit-btn" value="Post Story">
-    </div>
-  </div>
-</form>
-
-<!-- Favorites -->
-<div class="hidden" id="favoriteList">
-
-</div>
-
 <!-- area for stories (all stories, user stories, favorites) -->
 <section class="stories-container container">
+
+  <!-- form for submitted new story -->
+  <form action="" class="hidden" id="submit-form">
+    <div>
+      <label for="create-author">author</label>
+      <input id="create-author" required placeholder="author name">
+    </div>
+    <div>
+      <label for="create-title">title</label>
+      <input id="create-title" required placeholder="story title">
+    </div>
+    <div>
+      <label for="create-url">url</label>
+      <input id="create-url" required type="url" placeholder="story url">
+    </div>
+    <div>
+      <button type="submit">submit</button>
+    </div>
+    <hr>
+  </form> 
 
   <!-- loading message (removed by JS after stories loaded) -->
   <div id="stories-loading-msg">Loading&hellip;</div>
@@ -88,10 +79,10 @@
   <!-- List of all stories -->
   <ol id="all-stories-list" class="stories-list"></ol>
 
-  <!-- List of all favorites -->
+  <!-- List of stories favorited by the user -->
   <ol id="favorited-stories" class="hidden stories-list"></ol>
 
-  <!-- List of my Stories -->
+  <!-- List of stories by the user -->
   <ol id="my-stories" class="hidden stories-list"></ol>
 
 </section>
@@ -137,7 +128,17 @@
   </form>
 </section>
 
-<!-- User Profile -->
+<!-- User profile -->
+<section id="user-profile" class="hidden">
+  <div class="user-profile-box container">
+    <h4>User Profile Info</h4>
+    <section>
+      <div>Name: <span id="profile-name">Name:</span></div>
+      <div>Username: <span id="profile-username">Username:</span></div>
+      <div>Account Created: <span id="profile-account-date"></span></div>
+    </section>
+  </div>
+</section>
 
 <!-- Library JS & our JS -->
 <script src="https://unpkg.com/jquery"></script>
