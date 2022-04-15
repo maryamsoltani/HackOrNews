@@ -10,24 +10,21 @@ let currentUser;
 /** Handle login form submission. If login ok, sets up the user instance */
 
 async function login(evt) {
-	console.debug("login", evt);
-	evt.preventDefault();
+  console.debug("login", evt);
+  evt.preventDefault();
 
-	// grab the username and password
-	const username = $("#login-username").val();
-	const password = $("#login-password").val();
+  // grab the username and password
+  const username = $("#login-username").val();
+  const password = $("#login-password").val();
 
-	// User.login retrieves user info from API and returns User instance
-	// which we'll make the globally-available, logged-in user.
-	currentUser = await User.login(username, password);
+  // User.login retrieves user info from API and returns User instance
+  // which we'll make the globally-available, logged-in user.
+  currentUser = await User.login(username, password);
 
-	$loginForm.trigger("reset");
+  $loginForm.trigger("reset");
 
-	saveUserCredentialsInLocalStorage();
-	updateUIOnUserLogin();
-	putStoriesOnPage();
-	$loginForm.hide();
-	$signupForm.hide();
+  saveUserCredentialsInLocalStorage();
+  updateUIOnUserLogin();
 }
 
 $loginForm.on("submit", login);
@@ -35,62 +32,24 @@ $loginForm.on("submit", login);
 /** Handle signup form submission. */
 
 async function signup(evt) {
-	console.debug("signup", evt);
-	evt.preventDefault();
+  console.debug("signup", evt);
+  evt.preventDefault();
 
-	const name = $("#signup-name").val();
-	const username = $("#signup-username").val();
-	const password = $("#signup-password").val();
+  const name = $("#signup-name").val();
+  const username = $("#signup-username").val();
+  const password = $("#signup-password").val();
 
-	// User.signup retrieves user info from API and returns User instance
-	// which we'll make the globally-available, logged-in user.
-	currentUser = await User.signup(username, password, name);
+  // User.signup retrieves user info from API and returns User instance
+  // which we'll make the globally-available, logged-in user.
+  currentUser = await User.signup(username, password, name);
 
-	saveUserCredentialsInLocalStorage();
-	updateUIOnUserLogin();
+  saveUserCredentialsInLocalStorage();
+  updateUIOnUserLogin();
 
-	$signupForm.trigger("reset");
+  $signupForm.trigger("reset");
 }
 
 $signupForm.on("submit", signup);
-
-/** Handle update profile form submission. */
-
-async function update(evt) {
-	console.debug("update", evt);
-	evt.preventDefault();
-
-	let userData = {
-		name: $("#update-profile-name").val(),
-		username: currentUser.username,
-		password: $("#update-profile-password").val(),
-	};
-	
-	if (!userData.name && !userData.password) {
-		alert("Please enter a value!")
-		return
-	}
-
-	for (let val in userData) {
-		// if the input is empty, remove it from the obj
-		if (!userData[val]) {
-			delete userData[val]
-		}
-	}
-	
-	// User.signup retrieves user info from API and returns User instance
-	// which we'll make the globally-available, logged-in user.
-	currentUser = await User.update(userData);
-
-	console.log(currentUser)
-
-	saveUserCredentialsInLocalStorage();
-	showUserProfile();
-
-	$updateForm.trigger("reset");
-}
-
-$updateForm.on("submit", update);
 
 /** Handle click of logout button
  *
@@ -98,9 +57,9 @@ $updateForm.on("submit", update);
  */
 
 function logout(evt) {
-	console.debug("logout", evt);
-	localStorage.clear();
-	location.reload();
+  console.debug("logout", evt);
+  localStorage.clear();
+  location.reload();
 }
 
 $navLogOut.on("click", logout);
@@ -114,13 +73,13 @@ $navLogOut.on("click", logout);
  */
 
 async function checkForRememberedUser() {
-	console.debug("checkForRememberedUser");
-	const token = localStorage.getItem("token");
-	const username = localStorage.getItem("username");
-	if (!token || !username) return false;
+  console.debug("checkForRememberedUser");
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+  if (!token || !username) return false;
 
-	// try to log in with these credentials (will be null if login failed)
-	currentUser = await User.loginViaStoredCredentials(token, username);
+  // try to log in with these credentials (will be null if login failed)
+  currentUser = await User.loginViaStoredCredentials(token, username);
 }
 
 /** Sync current user information to localStorage.
@@ -130,15 +89,15 @@ async function checkForRememberedUser() {
  */
 
 function saveUserCredentialsInLocalStorage() {
-	console.debug("saveUserCredentialsInLocalStorage");
-	if (currentUser) {
-		localStorage.setItem("token", currentUser.loginToken);
-		localStorage.setItem("username", currentUser.username);
-	}
+  console.debug("saveUserCredentialsInLocalStorage");
+  if (currentUser) {
+    localStorage.setItem("token", currentUser.loginToken);
+    localStorage.setItem("username", currentUser.username);
+  }
 }
 
 /******************************************************************************
- * General UI stuff about users
+ * General UI stuff about users & profiles
  */
 
 /** When a user signs up or registers, we want to set up the UI for them:
@@ -148,18 +107,26 @@ function saveUserCredentialsInLocalStorage() {
  * - generate the user profile part of the page
  */
 
-function updateUIOnUserLogin() {
-	console.debug("updateUIOnUserLogin");
+async function updateUIOnUserLogin() {
+  console.debug("updateUIOnUserLogin");
 
-	$allStoriesList.show();
+  hidePageComponents();
 
-	updateNavOnLogin();
+  // re-display stories (so that "favorite" stars can appear)
+  putStoriesOnPage();
+  $allStoriesList.show();
+
+  updateNavOnLogin();
+  generateUserProfile();
 }
 
-function showUserProfile() {
-	console.debug("createUserProfile");
+/** Show a "user profile" part of page built from the current user's info. */
 
-	$("#profile-name").text(currentUser.name);
-	$("#profile-username").text(currentUser.username);
-	$("#profile-account-date").text(currentUser.createdAt.slice(0, 10));
+function generateUserProfile() {
+  console.debug("generateUserProfile");
+
+  $("#profile-name").text(currentUser.name);
+  $("#profile-username").text(currentUser.username);
+  $("#profile-account-date").text(currentUser.createdAt.slice(0, 10));
 }
+
